@@ -1,14 +1,35 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { ConfigService } from '@nestjs/config';
+import { AppModule } from './modules/app.module';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
+
+  const port = configService.get<number>('PORT') || 3000;
+  const allowedOrigins = configService
+    .get<string>('ALLOWED_ORIGINS')
+    ?.split(',') || ['http://localhost:3001'];
+
   app.setGlobalPrefix('api');
+
+  app.enableCors({
+    origin: allowedOrigins,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true, // allow cookies / auth headers
+  });
+
   app.useGlobalPipes(
-    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+    new ValidationPipe({
+      // Automatically remove any properties that are not defined in the DTO
+      whitelist: true,
+
+      // Throw an error if the request contains properties not defined in the DTO
+      forbidNonWhitelisted: true,
+    }),
   );
-  await app.listen(3000);
+  await app.listen(port);
 }
 
 bootstrap();

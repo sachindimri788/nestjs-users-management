@@ -1,7 +1,7 @@
 import {
   IsArray,
   IsIn,
-  IsNotEmpty,
+  IsOptional,
   IsString,
   MaxLength,
   ArrayNotEmpty,
@@ -9,21 +9,23 @@ import {
 import {
   PREDEFINED_GROUPS,
   PREDEFINED_ROLES,
-} from 'src/constants/auth.constants';
+} from 'src/common/constants/auth.constants';
 
-export class CreateUserDto {
-  @IsNotEmpty()
+export class UpdateUserDto {
+  @IsOptional()
   @IsString()
   @MaxLength(100)
-  name: string;
+  name?: string;
 
+  @IsOptional()
   @IsArray()
   @ArrayNotEmpty()
   @IsIn(PREDEFINED_ROLES, { each: true })
-  roles: string[];
+  roles?: string[];
 
+  @IsOptional()
   @IsArray()
   @ArrayNotEmpty()
   @IsIn(PREDEFINED_GROUPS, { each: true })
-  groups: string[];
+  groups?: string[];
 }
