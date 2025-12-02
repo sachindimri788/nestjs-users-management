@@ -7,8 +7,10 @@ import {
   ArrayNotEmpty,
 } from 'class-validator';
 import {
+  Group,
   PREDEFINED_GROUPS,
   PREDEFINED_ROLES,
+  Role,
 } from 'src/common/constants/auth.constants';
 
 export class UpdateUserDto {
@@ -21,11 +23,11 @@ export class UpdateUserDto {
   @IsArray()
   @ArrayNotEmpty()
   @IsIn(PREDEFINED_ROLES, { each: true })
-  roles?: string[];
+  roles?: Role[];
 
   @IsOptional()
   @IsArray()
   @ArrayNotEmpty()
   @IsIn(PREDEFINED_GROUPS, { each: true })
-  groups?: string[];
+  groups?: Group[];
 }

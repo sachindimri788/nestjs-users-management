@@ -7,6 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { ApiResponseDto } from '../dtos';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -37,14 +38,14 @@ export class HttpExceptionFilter implements ExceptionFilter {
       error = exception.name;
     }
 
-    const errorResponse = {
+    const errorResponse = new ApiResponseDto({
       statusCode: status,
-      timestamp: new Date().toISOString(),
+      message,
+      error,
+      data: null,
       path: request.url,
       method: request.method,
-      error,
-      message,
-    };
+    });
 
     this.logger.error(
       `[${request.method}] ${request.url} - Status: ${status} - Message: ${message}`,

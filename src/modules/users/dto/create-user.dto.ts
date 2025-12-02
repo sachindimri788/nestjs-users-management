@@ -7,8 +7,10 @@ import {
   ArrayNotEmpty,
 } from 'class-validator';
 import {
+  Group,
   PREDEFINED_GROUPS,
   PREDEFINED_ROLES,
+  Role,
 } from 'src/common/constants/auth.constants';
 
 export class CreateUserDto {
@@ -20,10 +22,10 @@ export class CreateUserDto {
   @IsArray()
   @ArrayNotEmpty()
   @IsIn(PREDEFINED_ROLES, { each: true })
-  roles: string[];
+  roles: Role[];
 
   @IsArray()
   @ArrayNotEmpty()
   @IsIn(PREDEFINED_GROUPS, { each: true })
-  groups: string[];
+  groups: Group[];
 }

@@ -13,6 +13,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PermissionsGuard } from '../../common/guards';
 import { Permission } from 'src/common/decorators';
+import { ApiControllerResponse } from '../../common/dtos';
+import { User } from 'src/common/constants/auth.constants';
 
 @Controller('v1/users')
 @UseGuards(PermissionsGuard)
@@ -21,32 +23,60 @@ export class UsersController {
 
   @Post()
   @Permission('CREATE')
-  create(@Body() dto: CreateUserDto) {
-    return this.usersService.create(dto);
+  async create(
+    @Body() dto: CreateUserDto,
+  ): Promise<ApiControllerResponse<User>> {
+    const user = await this.usersService.create(dto);
+    return {
+      data: user,
+      message: 'User created successfully',
+    };
   }
 
   @Get()
   @Permission('VIEW')
-  findAll() {
-    return this.usersService.findAll();
+  async findAll(): Promise<ApiControllerResponse<User[]>> {
+    const users = await this.usersService.findAll();
+    return {
+      data: users,
+      message: 'Users fetched successfully',
+    };
   }
 
   @Patch(':id')
   @Permission('EDIT')
-  update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
-    return this.usersService.update(Number(id), dto);
+  async update(
+    @Param('id') id: string,
+    @Body() dto: UpdateUserDto,
+  ): Promise<ApiControllerResponse<User>> {
+    const user = await this.usersService.update(Number(id), dto);
+    return {
+      data: user,
+      message: 'User updated successfully',
+    };
   }
 
   @Delete(':id')
   @Permission('DELETE')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(Number(id));
+  async remove(
+    @Param('id') id: string,
+  ): Promise<ApiControllerResponse<unknown>> {
+    await this.usersService.remove(Number(id));
+    return {
+      data: {},
+      message: 'User deleted successfully',
+    };
   }
 
   @Get('managed/:id')
-  // managed users query is a view operation: use VIEW permission (but it could be open)
   @Permission('VIEW')
-  managed(@Param('id') id: string) {
-    return this.usersService.managedUsersBy(Number(id));
+  async managed(
+    @Param('id') id: string,
+  ): Promise<ApiControllerResponse<User[]>> {
+    const managedUsers = await this.usersService.managedUsersBy(Number(id));
+    return {
+      data: managedUsers,
+      message: 'Managed users fetched successfully',
+    };
   }
 }
